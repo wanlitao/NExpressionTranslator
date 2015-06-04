@@ -1,7 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Expression.Translator", "Expression.Translator\Expression.Translator.csproj", "{06DDDA60-F47B-4BD5-B8AC-DB3928DD2B5B}"
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExprTranslator", "ExprTranslator\ExprTranslator.csproj", "{33BFD26E-605B-4CF0-9C83-958F16769D92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExprTranslator.Data", "ExprTranslator.Data\ExprTranslator.Data.csproj", "{FB178F72-71C5-4DB5-ADB8-001D6987B0F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{06DDDA60-F47B-4BD5-B8AC-DB3928DD2B5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{06DDDA60-F47B-4BD5-B8AC-DB3928DD2B5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{06DDDA60-F47B-4BD5-B8AC-DB3928DD2B5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{06DDDA60-F47B-4BD5-B8AC-DB3928DD2B5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33BFD26E-605B-4CF0-9C83-958F16769D92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33BFD26E-605B-4CF0-9C83-958F16769D92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33BFD26E-605B-4CF0-9C83-958F16769D92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33BFD26E-605B-4CF0-9C83-958F16769D92}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB178F72-71C5-4DB5-ADB8-001D6987B0F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB178F72-71C5-4DB5-ADB8-001D6987B0F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB178F72-71C5-4DB5-ADB8-001D6987B0F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB178F72-71C5-4DB5-ADB8-001D6987B0F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
