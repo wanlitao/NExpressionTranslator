@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExprTranslator", "ExprTranslator\ExprTranslator.csproj", "{33BFD26E-605B-4CF0-9C83-958F16769D92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExprTranslator.Data", "ExprTranslator.Data\ExprTranslator.Data.csproj", "{FB178F72-71C5-4DB5-ADB8-001D6987B0F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExprTranslator.Query", "ExprTranslator.Query\ExprTranslator.Query.csproj", "{FB178F72-71C5-4DB5-ADB8-001D6987B0F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

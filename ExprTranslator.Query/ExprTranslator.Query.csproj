@@ -7,8 +7,8 @@
     <ProjectGuid>{FB178F72-71C5-4DB5-ADB8-001D6987B0F3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ExprTranslator.Data</RootNamespace>
-    <AssemblyName>ExprTranslator.Data</AssemblyName>
+    <RootNamespace>ExprTranslator.Query</RootNamespace>
+    <AssemblyName>ExprTranslator.Query</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IExprQueryTranslator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryTranslator.cs" />
   </ItemGroup>

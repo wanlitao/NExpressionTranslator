@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace ExprTranslator.Data
+namespace ExprTranslator.Query
 {
     /// <summary>
     /// 查询翻译器
     /// </summary>
-    public class QueryTranslator : ExpressionVisitor, IExprTranslator
+    public class QueryTranslator : ExpressionVisitor, IExprQueryTranslator
     {
         public string Translate(Expression expression)
         {
