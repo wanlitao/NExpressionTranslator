@@ -295,9 +295,12 @@ namespace ExprTranslator.Query
                         this.Write("");
                         return m;
                     case "Ceiling":
-                    case "Floor":
-                        this.Write(m.Method.Name.ToUpper());
-                        this.Write("(");
+                        this.Write("Ceil(");
+                        this.Visit(m.Arguments[0]);
+                        this.Write(")");
+                        return m;
+                    case "Floor":                        
+                        this.Write("Floor(");
                         this.Visit(m.Arguments[0]);
                         this.Write(")");
                         return m;
@@ -320,9 +323,9 @@ namespace ExprTranslator.Query
                         }
                         break;
                     case "Truncate":
-                        this.Write("TRUNCATE(");
+                        this.Write("TRUNC(");
                         this.Visit(m.Arguments[0]);
-                        this.Write(",0)");
+                        this.Write(")");
                         return m;
                 }
             }
@@ -336,25 +339,38 @@ namespace ExprTranslator.Query
                     case "Atan":
                     case "Atan2":
                     case "Cos":
-                    case "Exp":
-                    case "Log10":
+                    case "Exp":                    
                     case "Sin":
                     case "Tan":
                     case "Sqrt":
-                    case "Sign":
-                    case "Ceiling":
+                    case "Sign":                    
                     case "Floor":
                         this.Write(m.Method.Name.ToUpper());
                         this.Write("(");
                         this.Visit(m.Arguments[0]);
                         this.Write(")");
                         return m;
+                    case "Ceiling":
+                        this.Write("Ceil(");
+                        this.Visit(m.Arguments[0]);
+                        this.Write(")");
+                        return m;
+                    case "Log10":
+                        goto case "Log";
                     case "Log":
+                        this.Write("Log(");
                         if (m.Arguments.Count == 1)
                         {
-                            goto case "Log10";
+                            this.Write("10, ");
                         }
-                        break;
+                        else
+                        {
+                            this.Write(m.Arguments[1]);
+                            this.Write(", ");
+                        }
+                        this.Visit(m.Arguments[0]);
+                        this.Write(")");
+                        return m;          
                     case "Pow":
                         this.Write("POWER(");
                         this.Visit(m.Arguments[0]);
@@ -381,7 +397,7 @@ namespace ExprTranslator.Query
                         }
                         break;
                     case "Truncate":
-                        this.Write("TRUNCATE(");
+                        this.Write("TRUNC(");
                         this.Visit(m.Arguments[0]);
                         this.Write(",0)");
                         return m;
@@ -391,9 +407,9 @@ namespace ExprTranslator.Query
             {
                 if (m.Object.Type != typeof(string))
                 {
-                    this.Write("CAST(");
+                    this.Write("TO_CHAR(");
                     this.Visit(m.Object);
-                    this.Write(" AS CHAR)");
+                    this.Write(")");
                 }
                 else
                 {
