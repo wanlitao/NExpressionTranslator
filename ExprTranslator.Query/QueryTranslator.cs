@@ -92,6 +92,17 @@ namespace ExprTranslator.Query
             }
         }
 
+        protected override Expression VisitMember(MemberExpression m)
+        {
+            //判断是否引用表达式参数对象的属性
+            if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter)
+            {
+                sb.Append(m.Member.Name);
+                return m;
+            }
+            throw new NotSupportedException(string.Format("The member '{0}' is not supported", m.Member.Name));
+        }
+
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
             if (m.Method.DeclaringType == typeof(Decimal))
@@ -154,6 +165,11 @@ namespace ExprTranslator.Query
                 }
             }
             throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
+        }
+
+        protected override Expression VisitNew(NewExpression nex)
+        {
+            throw new NotSupportedException(string.Format("The construtor for '{0}' is not supported", nex.Constructor.DeclaringType));
         }
 
         protected override Expression VisitUnary(UnaryExpression u)
@@ -417,6 +433,11 @@ namespace ExprTranslator.Query
             return type == typeof(bool) || type == typeof(bool?);
         }
 
+        protected virtual bool IsInteger(Type type)
+        {
+            return TypeHelper.IsInteger(type);
+        }
+
         protected virtual bool IsPredicate(Expression expr)
         {
             switch (expr.NodeType)
@@ -442,6 +463,11 @@ namespace ExprTranslator.Query
             }
         }
         #endregion        
+
+        protected override Expression VisitConditional(ConditionalExpression c)
+        {
+            throw new NotSupportedException(string.Format("Conditional expressions not supported"));            
+        }
 
         protected override Expression VisitConstant(ConstantExpression c)
         {
@@ -487,17 +513,6 @@ namespace ExprTranslator.Query
                         break;
                 }
             }
-        }
-
-        protected override Expression VisitMember(MemberExpression m)
-        {
-            //判断是否引用表达式参数对象的属性
-            if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter)
-            {
-                sb.Append(m.Member.Name);
-                return m;
-            }
-            throw new NotSupportedException(string.Format("The member '{0}' is not supported", m.Member.Name));
         }
     }
 }

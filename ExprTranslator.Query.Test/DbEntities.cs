@@ -13,5 +13,6 @@ namespace ExprTranslator.Query.Test
         public string Phone { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
+        public DateTime createTime { get; set; }
     }
 }
