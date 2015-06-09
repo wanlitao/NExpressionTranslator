@@ -61,6 +61,7 @@
     <Compile Include="TSqlQueryTranslatorTest.cs" />
     <Compile Include="SqlCeQueryTranslatorTest.cs" />
     <Compile Include="AccessQueryTranslatorTest.cs" />
+    <Compile Include="OracleQueryTranslatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExprTranslator.Query\ExprTranslator.Query.csproj">

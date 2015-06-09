@@ -348,6 +348,52 @@ namespace ExprTranslator.Query
             return base.VisitMethodCall(m);
         }
 
+        protected override Expression VisitNew(NewExpression nex)
+        {
+            if (nex.Constructor.DeclaringType == typeof(DateTime))
+            {
+                if (nex.Arguments.Count == 3)
+                {
+                    this.Write("(");
+                    this.Visit(nex.Arguments[0]);
+                    this.Write(" || '-' || (CASE WHEN ");
+                    this.Visit(nex.Arguments[1]);
+                    this.Write(" < 10 THEN '0' || ");
+                    this.Visit(nex.Arguments[1]);
+                    this.Write(" ELSE ");
+                    this.Visit(nex.Arguments[1]);
+                    this.Write(" END)");
+                    this.Write(" || '-' || (CASE WHEN ");
+                    this.Visit(nex.Arguments[2]);
+                    this.Write(" < 10 THEN '0' || ");
+                    this.Visit(nex.Arguments[2]);
+                    this.Write(" ELSE ");
+                    this.Visit(nex.Arguments[2]);
+                    this.Write(" END)");
+                    this.Write(")");
+                    return nex;
+                }
+                else if (nex.Arguments.Count == 6)
+                {
+                    this.Write("(");
+                    this.Visit(nex.Arguments[0]);
+                    this.Write(" || '-' || ");
+                    this.Visit(nex.Arguments[1]);
+                    this.Write(" || '-' || ");
+                    this.Visit(nex.Arguments[2]);
+                    this.Write(" || ' ' || ");
+                    this.Visit(nex.Arguments[3]);
+                    this.Write(" || ':' || ");
+                    this.Visit(nex.Arguments[4]);
+                    this.Write(" || ':' || ");
+                    this.Visit(nex.Arguments[5]);
+                    this.Write(")");
+                    return nex;
+                }
+            }
+            return base.VisitNew(nex);
+        }
+
         protected override Expression VisitBinary(BinaryExpression b)
         {
             if (b.NodeType == ExpressionType.Power)
@@ -403,52 +449,6 @@ namespace ExprTranslator.Query
             {
                 return base.GetOperator(b);
             }
-        }
-
-        protected override Expression VisitNew(NewExpression nex)
-        {
-            if (nex.Constructor.DeclaringType == typeof(DateTime))
-            {
-                if (nex.Arguments.Count == 3)
-                {
-                    this.Write("(");
-                    this.Visit(nex.Arguments[0]);
-                    this.Write(" || '-' || (CASE WHEN ");
-                    this.Visit(nex.Arguments[1]);
-                    this.Write(" < 10 THEN '0' || ");
-                    this.Visit(nex.Arguments[1]);
-                    this.Write(" ELSE ");
-                    this.Visit(nex.Arguments[1]);
-                    this.Write(" END)");
-                    this.Write(" || '-' || (CASE WHEN ");
-                    this.Visit(nex.Arguments[2]);
-                    this.Write(" < 10 THEN '0' || ");
-                    this.Visit(nex.Arguments[2]);
-                    this.Write(" ELSE ");
-                    this.Visit(nex.Arguments[2]);
-                    this.Write(" END)");
-                    this.Write(")");
-                    return nex;
-                }
-                else if (nex.Arguments.Count == 6)
-                {
-                    this.Write("(");
-                    this.Visit(nex.Arguments[0]);
-                    this.Write(" || '-' || ");
-                    this.Visit(nex.Arguments[1]);
-                    this.Write(" || '-' || ");
-                    this.Visit(nex.Arguments[2]);
-                    this.Write(" || ' ' || ");
-                    this.Visit(nex.Arguments[3]);
-                    this.Write(" || ':' || ");
-                    this.Visit(nex.Arguments[4]);
-                    this.Write(" || ':' || ");
-                    this.Visit(nex.Arguments[5]);
-                    this.Write(")");
-                    return nex;
-                }
-            }
-            return base.VisitNew(nex);
         }
 
         protected override Expression VisitValue(Expression expr)

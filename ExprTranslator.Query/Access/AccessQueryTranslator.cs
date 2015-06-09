@@ -449,6 +449,15 @@ namespace ExprTranslator.Query
                 this.Write("))");
                 return b;
             }
+            else if (b.NodeType == ExpressionType.Divide) //changed:2013/1/11 Fix 除法的上下取整的Bug
+            {
+                this.Write("FIX(");
+                this.VisitValue(b.Left);
+                this.Write(" / ");
+                this.VisitValue(b.Right);
+                this.Write(")");
+                return b;
+            }
             return base.VisitBinary(b);
         }
 
