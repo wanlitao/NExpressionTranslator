@@ -29,7 +29,15 @@ namespace ExprTranslator.Query.Test
             string companyName = "drore";
             Expression<Func<Customer, bool>> customerPredicate = x => x.CompanyName == companyName;            
             string whereSql = QueryTranslator.GetQueryText(customerPredicate);
-            Assert.AreEqual("(companyName = 'drore')", whereSql, true);
+            Assert.AreEqual("(companyName = @p0)", whereSql, true);
+        }
+
+        [TestMethod]
+        public void TestTranslateMultiParamWhereStr()
+        {
+            Expression<Func<Customer, bool>> customerPredicate = x => x.CompanyName == "drore" && x.City == "Hangzhou";
+            string whereSql = QueryTranslator.GetQueryText(customerPredicate);
+            Assert.AreEqual("((companyName = @p0) and (city = @p1))", whereSql, true);
         }
     }
 }

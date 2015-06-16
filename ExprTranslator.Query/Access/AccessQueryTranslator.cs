@@ -9,6 +9,10 @@ namespace ExprTranslator.Query
     /// </summary>
     public class AccessQueryTranslator : QueryTranslator
     {
+        private static QueryTypeSystem accessTypeSystem = new AccessTypeSystem();        
+
+        protected override QueryTypeSystem TypeSystem { get { return accessTypeSystem; } }
+
         public static new string GetQueryText(Expression expression)
         {
             var queryTranslator = new AccessQueryTranslator();
@@ -527,7 +531,7 @@ namespace ExprTranslator.Query
             return c;
         }
 
-        protected override void WriteValue(object value)
+        protected override void WriteConstant(Type constantType, object value)
         {
             if (value != null && value.GetType() == typeof(bool))
             {
@@ -535,7 +539,7 @@ namespace ExprTranslator.Query
             }
             else
             {
-                base.WriteValue(value);
+                base.WriteConstant(constantType, value);
             }
         }
     }

@@ -55,8 +55,8 @@
   <ItemGroup>
     <Compile Include="DbEntities.cs" />
     <Compile Include="MySqlQueryTranslatorTest.cs" />
-    <Compile Include="QueryTranslatorTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryTranslatorTest.cs" />
     <Compile Include="SQLiteQueryTranslatorTest.cs" />
     <Compile Include="TSqlQueryTranslatorTest.cs" />
     <Compile Include="SqlCeQueryTranslatorTest.cs" />

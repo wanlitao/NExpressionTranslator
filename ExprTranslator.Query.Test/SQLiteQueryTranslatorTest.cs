@@ -12,15 +12,15 @@ namespace ExprTranslator.Query.Test
         {
             Expression<Func<Customer, bool>> customerPredicate = x => x.CompanyName.StartsWith("dr");
             string whereSql = SQLiteQueryTranslator.GetQueryText(customerPredicate);
-            Assert.AreEqual("like('dr' || '%', companyName)", whereSql, true);
+            Assert.AreEqual("like(@p0 || '%', companyName)", whereSql, true);
 
             customerPredicate = x => x.CompanyName.EndsWith("dr");
             whereSql = SQLiteQueryTranslator.GetQueryText(customerPredicate);
-            Assert.AreEqual("like('%' || 'dr', companyName)", whereSql, true);
+            Assert.AreEqual("like('%' || @p0, companyName)", whereSql, true);
 
             customerPredicate = x => x.CompanyName.Contains("dr");
             whereSql = SQLiteQueryTranslator.GetQueryText(customerPredicate);
-            Assert.AreEqual("like('%' || 'dr' || '%', companyName)", whereSql, true);
+            Assert.AreEqual("like('%' || @p0 || '%', companyName)", whereSql, true);
 
             customerPredicate = x => x.CompanyName.Length == 9;
             whereSql = SQLiteQueryTranslator.GetQueryText(customerPredicate);
@@ -28,7 +28,7 @@ namespace ExprTranslator.Query.Test
 
             customerPredicate = x => x.CompanyName.CompareTo("dr") == 1;
             whereSql = SQLiteQueryTranslator.GetQueryText(customerPredicate);
-            Assert.AreEqual("((case when companyName = 'dr' then 0 when companyName < 'dr' then -1 else 1 end) = 1)", whereSql, true);
+            Assert.AreEqual("((case when companyName = @p0 then 0 when companyName < @p0 then -1 else 1 end) = 1)", whereSql, true);
         }
 
         [TestMethod]

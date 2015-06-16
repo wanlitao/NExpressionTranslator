@@ -9,6 +9,11 @@ namespace ExprTranslator.Query
     /// </summary>
     public class OracleQueryTranslator : QueryTranslator
     {
+        /// <summary>
+        /// 查询参数前缀
+        /// </summary>
+        public override string ParameterPrefix { get { return ":"; } }
+
         public static new string GetQueryText(Expression expression)
         {
             var queryTranslator = new OracleQueryTranslator();

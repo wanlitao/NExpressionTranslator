@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -10,7 +11,57 @@ namespace ExprTranslator.Query
     /// </summary>
     public class QueryTranslator : ExpressionVisitor, IExprQueryTranslator
     {
+        private static string paramNamePrefix = "p";
+        protected static QueryTypeSystem defaultTypeSystem = new QueryTypeSystem();
+
         private StringBuilder sb = new StringBuilder();
+        private int paramCount = 0;        
+        private Dictionary<TypeAndValue, QueryParameter> queryParamMap = new Dictionary<TypeAndValue, QueryParameter>();
+
+        /// <summary>
+        /// 查询参数前缀
+        /// </summary>
+        public virtual string ParameterPrefix { get { return "@"; } }
+
+        /// <summary>
+        /// 查询参数列表
+        /// </summary>
+        public QueryParameter[] Parameters { get { return queryParamMap.Select(m => m.Value).ToArray(); } }
+
+        protected virtual QueryTypeSystem TypeSystem { get { return defaultTypeSystem; } }
+
+        #region 私有结构定义
+        struct TypeAndValue : IEquatable<TypeAndValue>
+        {
+            Type type;
+            object value;
+            int hash;
+
+            public TypeAndValue(Type type, object value)
+            {
+                this.type = type;
+                this.value = value;
+                this.hash = type.GetHashCode() + (value != null ? value.GetHashCode() : 0);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (!(obj is TypeAndValue))
+                    return false;
+                return this.Equals((TypeAndValue)obj);
+            }
+
+            public bool Equals(TypeAndValue vt)
+            {
+                return vt.type == this.type && object.Equals(vt.value, this.value);
+            }
+
+            public override int GetHashCode()
+            {
+                return this.hash;
+            }
+        }
+        #endregion        
 
         public static string GetQueryText(Expression expression)
         {
@@ -18,12 +69,23 @@ namespace ExprTranslator.Query
             return queryTranslator.Translate(expression);
         }
 
-        public string Translate(Expression expression)
+        public virtual string Translate(Expression expression)
         {
-            sb.Clear();
+            clearTranslateResult();
+
             expression = PartialEvaluator.Eval(expression);
             this.Visit(expression);
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// 清除翻译结果
+        /// </summary>
+        private void clearTranslateResult()
+        {
+            sb.Clear();
+            paramCount = 0;
+            queryParamMap.Clear();
         }
 
         protected void Write(object value)
@@ -471,11 +533,11 @@ namespace ExprTranslator.Query
 
         protected override Expression VisitConstant(ConstantExpression c)
         {
-            this.WriteValue(c.Value);
+            this.WriteConstant(c.Type, c.Value);
             return c;
         }
 
-        protected virtual void WriteValue(object value)
+        protected virtual void WriteConstant(Type constantType, object value)
         {
             if (value == null)
             {
@@ -492,13 +554,6 @@ namespace ExprTranslator.Query
                     case TypeCode.Boolean:
                         this.Write(((bool)value) ? 1 : 0);
                         break;
-                    case TypeCode.String:
-                        this.Write("'");
-                        this.Write(value);
-                        this.Write("'");
-                        break;
-                    case TypeCode.Object:
-                        throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", value));
                     case TypeCode.Single:
                     case TypeCode.Double:
                         string str = value.ToString();
@@ -507,10 +562,23 @@ namespace ExprTranslator.Query
                             str += ".0";
                         }
                         this.Write(str);
+                        break;                    
+                    case TypeCode.DateTime:
+                    case TypeCode.String:
+                    case TypeCode.Object:
+                        QueryParameter queryParam;
+                        TypeAndValue typeValue = new TypeAndValue(constantType, value);
+                        if (!this.queryParamMap.TryGetValue(typeValue, out queryParam))
+                        { // re-use same name-value if same type & value
+                            string name = paramNamePrefix + (paramCount++);
+                            queryParam = new QueryParameter(name, constantType, value, this.TypeSystem.GetParameterType(constantType));
+                            this.queryParamMap.Add(typeValue, queryParam);
+                        }
+                        this.Write(ParameterPrefix + queryParam.Name);   //写入参数名
                         break;
                     default:
                         this.Write(value);
-                        break;
+                        break;                        
                 }
             }
         }
