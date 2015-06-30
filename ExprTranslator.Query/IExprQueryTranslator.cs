@@ -1,4 +1,5 @@
-﻿
+﻿using System.Linq.Expressions;
+
 namespace ExprTranslator.Query
 {
     public interface IExprQueryTranslator : IExprTranslator
@@ -6,11 +7,13 @@ namespace ExprTranslator.Query
         /// <summary>
         /// 查询参数前缀
         /// </summary>
-        string ParameterPrefix { get; }
+        string ParameterPrefix { get; }        
 
         /// <summary>
-        /// 查询参数列表
+        /// 翻译成查询Sql语句
         /// </summary>
-        QueryParameter[] Parameters { get; }
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        QuerySql TranslateSql(Expression expression);
     }
 }

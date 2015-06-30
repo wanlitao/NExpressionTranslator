@@ -8,12 +8,21 @@ namespace ExprTranslator.Query
     /// </summary>
     public class SqlCeQueryTranslator : TSqlQueryTranslator
     {
+        #region 静态方法
         public static new string GetQueryText(Expression expression)
         {
             var queryTranslator = new SqlCeQueryTranslator();
             return queryTranslator.Translate(expression);
         }
 
+        public static new QuerySql GetQuerySql(Expression expression)
+        {
+            var queryTranslator = new SqlCeQueryTranslator();
+            return queryTranslator.TranslateSql(expression);
+        }
+        #endregion
+
+        #region 表达式翻译
         protected override Expression VisitMember(MemberExpression m)
         {
             if (m.Member.DeclaringType == typeof(string))
@@ -80,5 +89,6 @@ namespace ExprTranslator.Query
             }
             return base.VisitMember(m);
         }
+        #endregion        
     }
 }

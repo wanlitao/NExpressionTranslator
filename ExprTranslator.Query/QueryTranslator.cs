@@ -12,9 +12,9 @@ namespace ExprTranslator.Query
     public class QueryTranslator : ExpressionVisitor, IExprQueryTranslator
     {
         private static string paramNamePrefix = "p";
-        protected static QueryTypeSystem defaultTypeSystem = new QueryTypeSystem();
+        private static QueryTypeSystem defaultTypeSystem = new QueryTypeSystem();
 
-        private StringBuilder sb = new StringBuilder();
+        protected StringBuilder sb = new StringBuilder();
         private int paramCount = 0;        
         private Dictionary<TypeAndValue, QueryParameter> queryParamMap = new Dictionary<TypeAndValue, QueryParameter>();
 
@@ -26,7 +26,7 @@ namespace ExprTranslator.Query
         /// <summary>
         /// 查询参数列表
         /// </summary>
-        public QueryParameter[] Parameters { get { return queryParamMap.Select(m => m.Value).ToArray(); } }
+        protected QueryParameter[] Parameters { get { return queryParamMap.Select(m => m.Value).ToArray(); } }
 
         protected virtual QueryTypeSystem TypeSystem { get { return defaultTypeSystem; } }
 
@@ -63,12 +63,26 @@ namespace ExprTranslator.Query
         }
         #endregion        
 
+        #region 静态方法
         public static string GetQueryText(Expression expression)
         {
             var queryTranslator = new QueryTranslator();
             return queryTranslator.Translate(expression);
         }
 
+        public static QuerySql GetQuerySql(Expression expression)
+        {
+            var queryTranslator = new QueryTranslator();
+            return queryTranslator.TranslateSql(expression);
+        }
+        #endregion
+
+        #region 接口实现
+        /// <summary>
+        /// 翻译成字符串
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
         public virtual string Translate(Expression expression)
         {
             clearTranslateResult();
@@ -78,6 +92,19 @@ namespace ExprTranslator.Query
             return sb.ToString();
         }
 
+        /// <summary>
+        /// 翻译成查询Sql语句
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public virtual QuerySql TranslateSql(Expression expression)
+        {
+            string whereStr = Translate(expression);
+            return new QuerySql(whereStr, Parameters);
+        }
+        #endregion        
+
+        #region 翻译辅助
         /// <summary>
         /// 清除翻译结果
         /// </summary>
@@ -92,7 +119,9 @@ namespace ExprTranslator.Query
         {
             this.sb.Append(value);
         }
+        #endregion        
 
+        #region 表达式翻译
         public override Expression Visit(Expression exp)
         {
             if (exp == null) return null;
@@ -143,7 +172,7 @@ namespace ExprTranslator.Query
                 case ExpressionType.Quote:
                 case ExpressionType.TypeAs:
                 case ExpressionType.ArrayIndex:
-                case ExpressionType.TypeIs:                                
+                case ExpressionType.TypeIs:
                 case ExpressionType.NewArrayInit:
                 case ExpressionType.NewArrayBounds:
                 case ExpressionType.Invoke:
@@ -266,7 +295,7 @@ namespace ExprTranslator.Query
                     break;
                 default:
                     throw new NotSupportedException(string.Format("The unary operator '{0}' is not supported", u.NodeType));
-                    
+
             }
             return u;
         }
@@ -524,11 +553,11 @@ namespace ExprTranslator.Query
                     return false;
             }
         }
-        #endregion        
+        #endregion
 
         protected override Expression VisitConditional(ConditionalExpression c)
         {
-            throw new NotSupportedException(string.Format("Conditional expressions not supported"));            
+            throw new NotSupportedException(string.Format("Conditional expressions not supported"));
         }
 
         protected override Expression VisitConstant(ConstantExpression c)
@@ -562,7 +591,7 @@ namespace ExprTranslator.Query
                             str += ".0";
                         }
                         this.Write(str);
-                        break;                    
+                        break;
                     case TypeCode.DateTime:
                     case TypeCode.String:
                     case TypeCode.Object:
@@ -578,9 +607,10 @@ namespace ExprTranslator.Query
                         break;
                     default:
                         this.Write(value);
-                        break;                        
+                        break;
                 }
             }
         }
+        #endregion        
     }
 }

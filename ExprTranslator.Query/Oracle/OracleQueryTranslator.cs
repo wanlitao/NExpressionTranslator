@@ -9,17 +9,30 @@ namespace ExprTranslator.Query
     /// </summary>
     public class OracleQueryTranslator : QueryTranslator
     {
+        private static QueryTypeSystem oracleTypeSystem = new OracleTypeSystem();
+
+        protected override QueryTypeSystem TypeSystem { get { return oracleTypeSystem; } }
+
         /// <summary>
         /// 查询参数前缀
         /// </summary>
         public override string ParameterPrefix { get { return ":"; } }
 
+        #region 静态方法
         public static new string GetQueryText(Expression expression)
         {
             var queryTranslator = new OracleQueryTranslator();
             return queryTranslator.Translate(expression);
         }
 
+        public static new QuerySql GetQuerySql(Expression expression)
+        {
+            var queryTranslator = new OracleQueryTranslator();
+            return queryTranslator.TranslateSql(expression);
+        }
+        #endregion
+
+        #region 表达式翻译
         protected override Expression VisitMember(MemberExpression m)
         {
             if (m.Member.DeclaringType == typeof(string))
@@ -124,7 +137,7 @@ namespace ExprTranslator.Query
                         {
                             if (i > 0) this.Write(" || ");
                             this.Visit(args[i]);
-                        }                        
+                        }
                         return m;
                     case "IsNullOrEmpty":
                         this.Write("(");
@@ -191,7 +204,7 @@ namespace ExprTranslator.Query
                         return m;
                     case "IndexOf":
                         this.Write("(INSTR(");
-                        this.Visit(m.Object);                        
+                        this.Visit(m.Object);
                         this.Write(", ");
                         this.Visit(m.Arguments[0]);
                         if (m.Arguments.Count == 2 && m.Arguments[1].Type == typeof(int))
@@ -302,7 +315,7 @@ namespace ExprTranslator.Query
                         this.Visit(m.Arguments[0]);
                         this.Write(")");
                         return m;
-                    case "Floor":                        
+                    case "Floor":
                         this.Write("FLOOR(");
                         this.Visit(m.Arguments[0]);
                         this.Write(")");
@@ -342,11 +355,11 @@ namespace ExprTranslator.Query
                     case "Atan":
                     case "Atan2":
                     case "Cos":
-                    case "Exp":                    
+                    case "Exp":
                     case "Sin":
                     case "Tan":
                     case "Sqrt":
-                    case "Sign":                    
+                    case "Sign":
                     case "Floor":
                         this.Write(m.Method.Name.ToUpper());
                         this.Write("(");
@@ -373,7 +386,7 @@ namespace ExprTranslator.Query
                         }
                         this.Visit(m.Arguments[0]);
                         this.Write(")");
-                        return m;          
+                        return m;
                     case "Pow":
                         this.Write("POWER(");
                         this.Visit(m.Arguments[0]);
@@ -627,5 +640,6 @@ namespace ExprTranslator.Query
             }
             return c;
         }
+        #endregion        
     }
 }
