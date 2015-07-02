@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Reflection;
 
 namespace ExprTranslator.Query.Test
 {
@@ -50,6 +51,17 @@ namespace ExprTranslator.Query.Test
             Assert.AreEqual(2, whereSql.parameters.Length);
             Assert.AreEqual(SqlDbType.NVarChar, whereSql.parameters[0].QueryType.SqlDbType);
             Assert.AreEqual(DbType.String, whereSql.parameters[1].QueryType.DbType);
+        }
+
+        [TestMethod]
+        public void TestTranslateByCustomMemberColumnConverter()
+        {
+            Expression<Func<Customer, bool>> customerPredicate = x => x.CompanyName == "drore" && x.City == "Hangzhou";
+            string whereSql = QueryTranslator.GetQueryText(customerPredicate);
+            Assert.AreEqual("((companyName = @p0) and (city = @p1))", whereSql, true);
+            Func<MemberInfo, string> customMemberColumnNameConverter = m => string.Format("{0}.{1}", m.DeclaringType.Name, m.Name);
+            whereSql = QueryTranslator.GetQueryText(customerPredicate, customMemberColumnNameConverter);
+            Assert.AreEqual("((customer.companyName = @p0) and (customer.city = @p1))", whereSql, true);
         }
     }
 }

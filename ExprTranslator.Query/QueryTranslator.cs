@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace ExprTranslator.Query
@@ -13,11 +14,15 @@ namespace ExprTranslator.Query
     {
         private static string paramNamePrefix = "p";
         private static QueryTypeSystem defaultTypeSystem = new QueryTypeSystem();
+        private static Func<MemberInfo, string> defaultMemberColumnNameGetter = m => m.Name;  //默认的 属性column名称转换器
 
         protected StringBuilder sb = new StringBuilder();
+        protected Func<MemberInfo, string> _memberColumnNameGetter;   //属性column名称转换器
+        
         private int paramCount = 0;        
         private Dictionary<TypeAndValue, QueryParameter> queryParamMap = new Dictionary<TypeAndValue, QueryParameter>();
 
+        #region 属性
         /// <summary>
         /// 查询参数前缀
         /// </summary>
@@ -29,6 +34,23 @@ namespace ExprTranslator.Query
         protected QueryParameter[] Parameters { get { return queryParamMap.Select(m => m.Value).ToArray(); } }
 
         protected virtual QueryTypeSystem TypeSystem { get { return defaultTypeSystem; } }
+
+        /// <summary>
+        /// 属性column名转换器
+        /// </summary>
+        public Func<MemberInfo, string> MemberColumnNameConverter
+        {
+            get
+            {
+                _memberColumnNameGetter = _memberColumnNameGetter ?? defaultMemberColumnNameGetter;
+                return _memberColumnNameGetter;
+            }
+            set
+            {
+                _memberColumnNameGetter = value;
+            }
+        }
+        #endregion        
 
         #region 私有结构定义
         struct TypeAndValue : IEquatable<TypeAndValue>
@@ -64,15 +86,19 @@ namespace ExprTranslator.Query
         #endregion        
 
         #region 静态方法
-        public static string GetQueryText(Expression expression)
+        public static string GetQueryText(Expression expression,
+            Func<MemberInfo, string> memberColumnNameGetter = null)
         {
             var queryTranslator = new QueryTranslator();
+            queryTranslator.MemberColumnNameConverter = memberColumnNameGetter;
             return queryTranslator.Translate(expression);
         }
 
-        public static QuerySql GetQuerySql(Expression expression)
+        public static QuerySql GetQuerySql(Expression expression,
+            Func<MemberInfo, string> memberColumnNameGetter = null)
         {
             var queryTranslator = new QueryTranslator();
+            queryTranslator.MemberColumnNameConverter = memberColumnNameGetter;
             return queryTranslator.TranslateSql(expression);
         }
         #endregion
@@ -188,7 +214,8 @@ namespace ExprTranslator.Query
             //判断是否引用表达式参数对象的属性
             if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter)
             {
-                sb.Append(m.Member.Name);
+                string columnName = MemberColumnNameConverter(m.Member); //获取实体属性对应column名称
+                sb.Append(columnName);
                 return m;
             }
             throw new NotSupportedException(string.Format("The member '{0}' is not supported", m.Member.Name));

@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ExprTranslator.Query
 {
@@ -7,7 +9,12 @@ namespace ExprTranslator.Query
         /// <summary>
         /// 查询参数前缀
         /// </summary>
-        string ParameterPrefix { get; }        
+        string ParameterPrefix { get; }
+
+        /// <summary>
+        /// 属性column名转换器
+        /// </summary>
+        Func<MemberInfo, string> MemberColumnNameConverter { get; set; }
 
         /// <summary>
         /// 翻译成查询Sql语句

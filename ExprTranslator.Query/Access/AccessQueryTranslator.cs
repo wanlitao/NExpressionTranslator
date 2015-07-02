@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ExprTranslator.Query
 {
@@ -14,15 +15,19 @@ namespace ExprTranslator.Query
         protected override QueryTypeSystem TypeSystem { get { return accessTypeSystem; } }
 
         #region 静态方法
-        public static new string GetQueryText(Expression expression)
+        public static new string GetQueryText(Expression expression,
+            Func<MemberInfo, string> memberColumnNameGetter = null)
         {
             var queryTranslator = new AccessQueryTranslator();
+            queryTranslator.MemberColumnNameConverter = memberColumnNameGetter;
             return queryTranslator.Translate(expression);
         }
 
-        public static new QuerySql GetQuerySql(Expression expression)
+        public static new QuerySql GetQuerySql(Expression expression,
+            Func<MemberInfo, string> memberColumnNameGetter = null)
         {
             var queryTranslator = new AccessQueryTranslator();
+            queryTranslator.MemberColumnNameConverter = memberColumnNameGetter;
             return queryTranslator.TranslateSql(expression);
         }
         #endregion
