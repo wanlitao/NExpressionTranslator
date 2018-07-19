@@ -80,7 +80,7 @@ namespace ExprTranslator.Query
                 case TypeCode.Double:
                     return NewType(SqlDbType.Float, isNotNull, 0, 0, 0);
                 case TypeCode.String:
-                    return NewType(SqlDbType.NVarChar, isNotNull, this.StringDefaultSize, 0, 0);
+                    return NewType(SqlDbType.NVarChar, isNotNull, 0, 0, 0);
                 case TypeCode.Char:
                     return NewType(SqlDbType.NChar, isNotNull, 1, 0, 0);
                 case TypeCode.DateTime:
@@ -89,7 +89,7 @@ namespace ExprTranslator.Query
                     return NewType(SqlDbType.Decimal, isNotNull, 0, 29, 4);
                 default:
                     if (type == typeof(byte[]))
-                        return NewType(SqlDbType.VarBinary, isNotNull, this.BinaryDefaultSize, 0, 0);
+                        return NewType(SqlDbType.VarBinary, isNotNull, 0, 0, 0);
                     else if (type == typeof(Guid))
                         return NewType(SqlDbType.UniqueIdentifier, isNotNull, 0, 0, 0);
                     else if (type == typeof(DateTimeOffset))
